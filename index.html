@@ -69,9 +69,10 @@
             line-height: 1.7;
         }
 
-        .bg-primary { background-color: #4f46e5; }
-        .hover-bg-primary:hover { background-color: #4338ca; }
-        .text-primary { color: #4f46e5; }
+        /* Jarak offset agar konten tidak tertutup sticky header di mobile */
+        .scroll-mt-24 {
+            scroll-margin-top: 6rem;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
@@ -83,7 +84,7 @@
         </div>
     </div>
 
-    <!-- Floating Toggle Button -->
+    <!-- Tombol Toggle Melayang -->
     <button id="global-sidebar-toggle" class="toggle-btn-floating w-14 h-14 bg-indigo-600 text-white rounded-full hover:scale-110 transition-transform active:scale-95">
         <i class="fas fa-bars text-xl" id="toggle-icon"></i>
     </button>
@@ -118,6 +119,7 @@
 
     <div id="main-wrapper" class="min-h-screen md:ml-64">
         
+        <!-- Header Mobile Sticky -->
         <div class="md:hidden sticky top-0 w-full bg-white/90 backdrop-blur-md z-40 p-4 border-b border-slate-100 flex justify-center items-center">
             <span class="font-bold text-lg">Panitia <span class="text-indigo-600">TKA</span></span>
         </div>
@@ -152,8 +154,9 @@
                 </div>
                 <div class="flex space-x-6 text-slate-400">
                     <a href="#" class="hover:text-indigo-600 transition"><i class="fab fa-instagram text-xl"></i></a>
-                    <a href="https://wa.me/6285747006947" target="_blank" class="hover:text-indigo-600 transition"><i class="fab fa-whatsapp text-xl"></i></a>
-                    <a href="#" class="hover:text-indigo-600 transition"><i class="fas fa-envelope text-xl"></i></a>
+                    <a href="mailto:mgmpmtksmpclp@smpn04majenang.sch.id" class="hover:text-red-600 transition" title="Kirim Email ke Admin">
+                        <i class="fas fa-envelope text-xl"></i>
+                    </a>
                 </div>
             </div>
         </footer>
@@ -162,6 +165,23 @@
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>
         const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR8x8ItXj_f3MwTYw_mIPdryl_JTj0UpoNDEqcIyz4Ql8ppVajr6P5KfB2aPPgmVLoycQCsBQT9WVWq/pub?output=csv';
+
+        // Fungsi bantu untuk scroll ke ID tertentu
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                // Tutup sidebar di mobile setelah klik
+                if (window.innerWidth < 768) {
+                    isSidebarOpen = false;
+                    updateLayout(false);
+                }
+                
+                element.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
 
         function parseCSV(text) {
             const result = [];
@@ -231,7 +251,9 @@
                     const sid = cols[1].trim();
                     const title = cols[2].trim();
                     const desc = cols[3].trim();
-                    const img = cols[4] ? cols[4].trim() : 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=80';
+                    
+                    const imgUrl = cols[4] ? cols[4].trim() : '';
+                    const hasImage = imgUrl !== '' && imgUrl.startsWith('http');
                     
                     const rawBtnLabels = cols[5] || '';
                     const rawBtnLinks = cols[6] || '';
@@ -239,9 +261,11 @@
                     const btnLabelsArray = rawBtnLabels.split(/\r?\n/).map(s => s.trim()).filter(s => s !== "");
                     const btnLinksArray = rawBtnLinks.split(/\r?\n/).map(s => s.trim()).filter(s => s !== "");
 
+                    // NAVIGASI DENGAN EVENT CLICK MANUAL
                     const aNav = document.createElement('a');
-                    aNav.href = `#${sid}`;
-                    aNav.className = "flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-500 font-semibold hover:bg-indigo-50 hover:text-indigo-600 transition-all group";
+                    aNav.href = "javascript:void(0)";
+                    aNav.onclick = () => scrollToSection(sid);
+                    aNav.className = "flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-500 font-semibold hover:bg-indigo-50 hover:text-indigo-600 transition-all group cursor-pointer";
                     aNav.innerHTML = `
                         <div class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 group-hover:bg-indigo-100 transition-colors">
                             <i class="fas fa-link text-[10px]"></i>
@@ -263,9 +287,12 @@
 
                     const section = document.createElement('section');
                     section.id = sid;
-                    section.className = "py-16 border-b border-slate-100 last:border-0 scroll-mt-20";
+                    // Tambahkan scroll-mt agar tidak tertutup header mobile
+                    section.className = "py-16 border-b border-slate-100 last:border-0 scroll-mt-24";
                     section.setAttribute('data-aos', 'fade-up');
-                    section.innerHTML = `
+
+                    const contentGrid = hasImage 
+                        ? `
                         <div class="grid lg:grid-cols-12 gap-12 items-center">
                             <div class="lg:col-span-7">
                                 <h2 class="text-3xl font-bold text-slate-900 mb-4">${title}</h2>
@@ -273,8 +300,8 @@
                                 <div class="text-slate-600 desc-text mb-8 text-sm md:text-base">${desc}</div>
                                 <div class="flex flex-wrap gap-4">
                                     ${dynamicButtonsHTML}
-                                    <a href="https://wa.me/6285747006947" target="_blank" class="bg-emerald-600 text-white px-8 py-3 rounded-xl text-sm font-bold hover:bg-emerald-700 hover:shadow-xl hover:shadow-emerald-200 transition-all active:scale-95 flex items-center justify-center space-x-2">
-                                        <i class="fab fa-whatsapp text-lg"></i>
+                                    <a href="mailto:mgmpmtksmpclp@smpn04majenang.sch.id" class="bg-transparent text-red-600 border-2 border-red-600 px-8 py-3 rounded-xl text-sm font-bold hover:bg-red-50 transition-all active:scale-95 flex items-center justify-center space-x-2">
+                                        <i class="fas fa-envelope text-lg"></i>
                                         <span>Admin</span>
                                     </a>
                                 </div>
@@ -282,10 +309,25 @@
                             <div class="lg:col-span-5">
                                 <div class="relative group">
                                     <div class="absolute -inset-4 bg-gradient-to-tr from-indigo-100 to-sky-100 rounded-[2.5rem] opacity-30 blur-xl group-hover:opacity-60 transition"></div>
-                                    <img src="${img}" class="relative rounded-[2rem] shadow-2xl w-full h-64 object-cover border-4 border-white transition-transform group-hover:scale-[1.02]">
+                                    <img src="${imgUrl}" class="relative rounded-[2rem] shadow-2xl w-full h-64 object-cover border-4 border-white transition-transform group-hover:scale-[1.02]">
                                 </div>
                             </div>
+                        </div>`
+                        : `
+                        <div class="max-w-4xl">
+                            <h2 class="text-3xl font-bold text-slate-900 mb-4">${title}</h2>
+                            <div class="w-16 h-1 bg-indigo-600 rounded-full mb-6"></div>
+                            <div class="text-slate-600 desc-text mb-8 text-sm md:text-base">${desc}</div>
+                            <div class="flex flex-wrap gap-4">
+                                ${dynamicButtonsHTML}
+                                <a href="mailto:mgmpmtksmpclp@smpn04majenang.sch.id" class="bg-transparent text-red-600 border-2 border-red-600 px-8 py-3 rounded-xl text-sm font-bold hover:bg-red-50 transition-all active:scale-95 flex items-center justify-center space-x-2">
+                                    <i class="fas fa-envelope text-lg"></i>
+                                    <span>Admin</span>
+                                </a>
+                            </div>
                         </div>`;
+
+                    section.innerHTML = contentGrid;
                     main.appendChild(section);
                 }
             });
@@ -319,7 +361,10 @@
         updateLayout(isSidebarOpen);
         btnToggle.addEventListener('click', () => { isSidebarOpen = !isSidebarOpen; updateLayout(isSidebarOpen); });
         overlay.addEventListener('click', () => { isSidebarOpen = false; updateLayout(isSidebarOpen); });
-        window.addEventListener('resize', () => { isSidebarOpen = window.innerWidth >= 768; updateLayout(isSidebarOpen); });
+        window.addEventListener('resize', () => { 
+            isSidebarOpen = window.innerWidth >= 768; 
+            updateLayout(isSidebarOpen); 
+        });
 
         init();
     </script>
