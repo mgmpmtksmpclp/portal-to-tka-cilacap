@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panitia Try Out TKA - Portal Cek Pendaftar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        #sidebar {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #main-wrapper {
+            transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1), width 0.4s ease;
+            width: 100%;
+        }
+
+        .sidebar-glass {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .loader-ring {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4f46e5;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #4f46e5, #0ea5e9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .toggle-btn-floating {
+            position: fixed;
+            bottom: 2rem;
+            left: 1.5rem;
+            z-index: 200;
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .desc-text {
+            white-space: pre-line;
+            text-align: justify;
+            text-justify: inter-word;
+            line-height: 1.7;
+        }
+
+        .bg-primary { background-color: #4f46e5; }
+        .hover-bg-primary:hover { background-color: #4338ca; }
+        .text-primary { color: #4f46e5; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <div id="loading-overlay" class="fixed inset-0 z-[300] flex items-center justify-center bg-white text-center">
+        <div>
+            <div class="loader-ring mx-auto mb-4"></div>
+            <p class="text-slate-500 font-medium text-sm tracking-widest uppercase italic">Menghubungkan Database Pendaftar...</p>
+        </div>
+    </div>
+
+    <!-- Floating Toggle Button -->
+    <button id="global-sidebar-toggle" class="toggle-btn-floating w-14 h-14 bg-indigo-600 text-white rounded-full hover:scale-110 transition-transform active:scale-95">
+        <i class="fas fa-bars text-xl" id="toggle-icon"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 sidebar-glass z-[180] shadow-xl md:shadow-none translate-x-0">
+        <div class="p-8 h-full flex flex-col overflow-hidden">
+            <div class="flex-shrink-0 flex items-center justify-between mb-10">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200">
+                        <i class="fas fa-graduation-cap text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight text-slate-900">Panitia<span class="text-indigo-600"> TO TKA</span></span>
+                </div>
+            </div>
+
+            <div class="px-4 mb-4">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Navigasi Utama</p>
+            </div>
+
+            <nav id="nav-menu" class="flex-grow space-y-2 overflow-y-auto pr-2"></nav>
+
+            <div class="flex-shrink-0 pt-6 mt-6 border-t border-slate-100 opacity-50">
+                <p class="text-[10px] text-slate-400 text-center uppercase tracking-widest font-semibold">
+                    &copy; 2026 Portal Verifikasi
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/40 z-[170] hidden backdrop-blur-sm"></div>
+
+    <div id="main-wrapper" class="min-h-screen md:ml-64">
+        
+        <div class="md:hidden sticky top-0 w-full bg-white/90 backdrop-blur-md z-40 p-4 border-b border-slate-100 flex justify-center items-center">
+            <span class="font-bold text-lg">Panitia <span class="text-indigo-600">TKA</span></span>
+        </div>
+
+        <header class="relative pt-16 md:pt-32 pb-12 px-6 md:px-12 bg-white overflow-hidden">
+            <div class="max-w-4xl" data-aos="fade-up">
+                <span class="inline-block py-1 px-4 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-bold mb-6 tracking-widest uppercase border border-indigo-100">Sistem Verifikasi Online</span>
+                <h1 id="hero-title" class="text-4xl md:text-6xl font-extrabold leading-[1.15] mb-6 text-slate-900">
+                    Try Out <span class="gradient-text">Tes Kemampuan Akademik (TKA)</span>
+                </h1>
+                <p id="hero-subtitle" class="text-base md:text-lg text-slate-500 max-w-2xl mb-8 leading-relaxed whitespace-pre-line">
+                    Gunakan menu serta tautan yang ada di bawah ini untuk kelancaran kegiatan.
+                </p>
+                <div class="flex flex-wrap items-center gap-4">
+                    <div class="flex items-center space-x-2 bg-slate-50 px-4 py-2 rounded-lg border border-slate-100">
+                        <i class="fas fa-circle text-indigo-500 text-[8px] animate-pulse"></i>
+                        <span class="text-xs font-bold text-slate-600">Server Utama Aktif</span>
+                    </div>
+                    <div class="h-8 w-px bg-slate-200 mx-2"></div>
+                    <p class="text-xs md:text-sm font-semibold text-slate-600">Terakhir diperbarui: <span id="last-update">Baru saja</span></p>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="px-6 md:px-12 pb-24 space-y-6"></main>
+
+        <footer class="bg-white border-t border-slate-100 py-12 px-6 md:px-12">
+            <div class="max-w-5xl flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="text-center md:text-left">
+                    <span class="text-lg font-bold">Panitia<span class="text-indigo-600">TKA</span></span>
+                    <p class="text-slate-400 text-[10px] uppercase tracking-tighter mt-1">Layanan Informasi Pendaftaran</p>
+                </div>
+                <div class="flex space-x-6 text-slate-400">
+                    <a href="#" class="hover:text-indigo-600 transition"><i class="fab fa-instagram text-xl"></i></a>
+                    <a href="https://wa.me/6285747006947" target="_blank" class="hover:text-indigo-600 transition"><i class="fab fa-whatsapp text-xl"></i></a>
+                    <a href="#" class="hover:text-indigo-600 transition"><i class="fas fa-envelope text-xl"></i></a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR8x8ItXj_f3MwTYw_mIPdryl_JTj0UpoNDEqcIyz4Ql8ppVajr6P5KfB2aPPgmVLoycQCsBQT9WVWq/pub?output=csv';
+
+        function parseCSV(text) {
+            const result = [];
+            let row = [];
+            let currentField = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const nextChar = text[i + 1];
+
+                if (char === '"') {
+                    if (inQuotes && nextChar === '"') {
+                        currentField += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    row.push(currentField);
+                    currentField = '';
+                } else if ((char === '\r' || char === '\n') && !inQuotes) {
+                    if (currentField || row.length > 0) {
+                        row.push(currentField);
+                        result.push(row);
+                        currentField = '';
+                        row = [];
+                    }
+                    if (char === '\r' && nextChar === '\n') i++;
+                } else {
+                    currentField += char;
+                }
+            }
+            if (currentField || row.length > 0) {
+                row.push(currentField);
+                result.push(row);
+            }
+            return result;
+        }
+
+        async function init() {
+            try {
+                const response = await fetch(sheetUrl);
+                const csvText = await response.text();
+                const dataArray = parseCSV(csvText);
+                renderUI(dataArray);
+                AOS.init({ duration: 800, once: true });
+                const now = new Date();
+                document.getElementById('last-update').innerText = now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes();
+            } catch (err) {
+                console.error('Fetch error:', err);
+                document.getElementById('loading-overlay').innerHTML = `<p class='text-red-500 p-4'>Gagal memuat database.</p>`;
+            }
+        }
+
+        function renderUI(rows) {
+            const dataRows = rows.slice(1);
+            const nav = document.getElementById('nav-menu');
+            const main = document.getElementById('main-content');
+            
+            nav.innerHTML = '';
+            main.innerHTML = '';
+
+            dataRows.forEach((cols) => {
+                if (cols.length >= 4) {
+                    const label = cols[0].trim();
+                    const sid = cols[1].trim();
+                    const title = cols[2].trim();
+                    const desc = cols[3].trim();
+                    const img = cols[4] ? cols[4].trim() : 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=80';
+                    
+                    const rawBtnLabels = cols[5] || '';
+                    const rawBtnLinks = cols[6] || '';
+
+                    const btnLabelsArray = rawBtnLabels.split(/\r?\n/).map(s => s.trim()).filter(s => s !== "");
+                    const btnLinksArray = rawBtnLinks.split(/\r?\n/).map(s => s.trim()).filter(s => s !== "");
+
+                    const aNav = document.createElement('a');
+                    aNav.href = `#${sid}`;
+                    aNav.className = "flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-500 font-semibold hover:bg-indigo-50 hover:text-indigo-600 transition-all group";
+                    aNav.innerHTML = `
+                        <div class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 group-hover:bg-indigo-100 transition-colors">
+                            <i class="fas fa-link text-[10px]"></i>
+                        </div>
+                        <span class="text-sm">${label}</span>
+                    `;
+                    nav.appendChild(aNav);
+
+                    let dynamicButtonsHTML = '';
+                    btnLabelsArray.forEach((btnText, i) => {
+                        const btnLink = btnLinksArray[i] || '#';
+                        dynamicButtonsHTML += `
+                            <a href="${btnLink}" target="_blank" class="bg-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-bold hover:shadow-xl hover:shadow-indigo-200 transition-all active:scale-95 flex items-center space-x-2">
+                                <i class="fas fa-external-link-alt text-[10px]"></i>
+                                <span>${btnText}</span>
+                            </a>
+                        `;
+                    });
+
+                    const section = document.createElement('section');
+                    section.id = sid;
+                    section.className = "py-16 border-b border-slate-100 last:border-0 scroll-mt-20";
+                    section.setAttribute('data-aos', 'fade-up');
+                    section.innerHTML = `
+                        <div class="grid lg:grid-cols-12 gap-12 items-center">
+                            <div class="lg:col-span-7">
+                                <h2 class="text-3xl font-bold text-slate-900 mb-4">${title}</h2>
+                                <div class="w-16 h-1 bg-indigo-600 rounded-full mb-6"></div>
+                                <div class="text-slate-600 desc-text mb-8 text-sm md:text-base">${desc}</div>
+                                <div class="flex flex-wrap gap-4">
+                                    ${dynamicButtonsHTML}
+                                    <a href="https://wa.me/6285747006947" target="_blank" class="bg-emerald-600 text-white px-8 py-3 rounded-xl text-sm font-bold hover:bg-emerald-700 hover:shadow-xl hover:shadow-emerald-200 transition-all active:scale-95 flex items-center justify-center space-x-2">
+                                        <i class="fab fa-whatsapp text-lg"></i>
+                                        <span>Admin</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="lg:col-span-5">
+                                <div class="relative group">
+                                    <div class="absolute -inset-4 bg-gradient-to-tr from-indigo-100 to-sky-100 rounded-[2.5rem] opacity-30 blur-xl group-hover:opacity-60 transition"></div>
+                                    <img src="${img}" class="relative rounded-[2rem] shadow-2xl w-full h-64 object-cover border-4 border-white transition-transform group-hover:scale-[1.02]">
+                                </div>
+                            </div>
+                        </div>`;
+                    main.appendChild(section);
+                }
+            });
+
+            document.getElementById('loading-overlay').style.opacity = '0';
+            setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 500);
+        }
+
+        const sidebar = document.getElementById('sidebar');
+        const mainWrapper = document.getElementById('main-wrapper');
+        const btnToggle = document.getElementById('global-sidebar-toggle');
+        const iconToggle = document.getElementById('toggle-icon');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        function updateLayout(isOpen) {
+            const isDesktop = window.innerWidth >= 768;
+            if (isOpen) {
+                sidebar.style.transform = 'translateX(0)';
+                iconToggle.className = 'fas fa-times text-xl';
+                if (isDesktop) mainWrapper.style.marginLeft = '16rem';
+                else overlay.classList.remove('hidden');
+            } else {
+                sidebar.style.transform = 'translateX(-100%)';
+                iconToggle.className = 'fas fa-bars text-xl';
+                mainWrapper.style.marginLeft = '0';
+                overlay.classList.add('hidden');
+            }
+        }
+
+        let isSidebarOpen = window.innerWidth >= 768;
+        updateLayout(isSidebarOpen);
+        btnToggle.addEventListener('click', () => { isSidebarOpen = !isSidebarOpen; updateLayout(isSidebarOpen); });
+        overlay.addEventListener('click', () => { isSidebarOpen = false; updateLayout(isSidebarOpen); });
+        window.addEventListener('resize', () => { isSidebarOpen = window.innerWidth >= 768; updateLayout(isSidebarOpen); });
+
+        init();
+    </script>
+</body>
+</html>
